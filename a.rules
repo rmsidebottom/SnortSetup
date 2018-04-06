@@ -6,23 +6,17 @@ alert icmp $HOME_NET any -> $HOME_NET any (msg:"ICMP Ping: Internal"; sid:100000
 
 # DNS (2), should only be udp
 drop tcp any any <> $HOME_NET 53 (msg:"TCP Traffic to/from host on port 53."; sid:2000001; rev:002;)
-#alert icmp any any <> $HOME_NET 53 (msg:"ICMP Traffic to/from host on port 53."; sid:2000002; rev:002;)
 
 # HTTP (3), should only be tcp
 drop udp any any <> $HOME_NET 80 (msg:"UDP traffic to/from host on port 80."; sid:3000001; rev:002;)
-#alert icmp any any <> $HOME_NET 443 (msg:"ICMP traffic to/from host on port 443."; sid:3000002; rev:002;)
 
 # S/FTP (4), should only be tcp
 drop udp any any <> $HOME_NET 21 (msg:"UDP traffic to/from host on port 21"; sid:4000001; rev:002;)
-#alert icmp any any <> $HOME_NET 21 (msg:"ICMP traffic to/from host on port 21"; sid:4000002; rev:002;)
 
 # MAIL (5)should only be tcp
 drop udp any any <> $HOME_NET 25 (msg:"UDP traffic to/from host on port 25"; sid:5000001; rev:001;)
-#alert icmp any any <> $HOME_NET 25 (msg:"ICMP traffic to/from host on port 25"; sid:5000002; rev:001;)
 drop udp any any <> $HOME_NET 143 (msg:"UDP traffic to/from host on port 143"; sid:5000003; rev:001;)
-#alert icmp any any <> $HOME_NET 143 (msg:"ICMP traffic to/from host on port 143"; sid:5000004; rev:001;)
 drop udp any any <> $HOME_NET 110 (msg:"UDP traffic to/from host on port 110"; sid:5000005; rev:001;)
-#alert icmp any any <> $HOME_NET 110 (msg:"ICMP traffic to/from host on port 110"; sid:5000006; rev:001;)
 
 # SSH/SFTP (6), should only be tcp
 drop udp any any <> $HOME_NET 22 (msg:"UDP traffic to/from host on port 22"; sid:6000001; rev:002;)
