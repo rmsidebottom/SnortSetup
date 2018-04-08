@@ -1,6 +1,6 @@
 # nmap scans
 # NMAP operating system scan
-alert ip $EXTERNAL_NET any -> $HOME_NET any (msg:"ET SCAN NMAP -sO"; dsize:0; ip_proto:21; threshold: type both, track by_dst, count 1, seconds 60; reference:url,doc.emergingthreats.net/2000536; classtype:attempted-recon; sid:2000536; rev:7; metadata:created_at 2010_07_30, updated_at 2010_07_30;)
+drop ip $EXTERNAL_NET any -> $HOME_NET any (msg:"ET SCAN NMAP -sO"; dsize:0; ip_proto:21; threshold: type both, track by_dst, count 1, seconds 60; reference:url,doc.emergingthreats.net/2000536; classtype:attempted-recon; sid:2000001; rev:002; metadata:created_at 2010_07_30, updated_at 2010_07_30;)
 
 drop icmp any any -> $HOME_NET any (msg:"ICMP PING NMAP"; dsize:0; itype:8; reference:arachnids,162; classtype:attempted-recon; sid:7000001; rev:001;)
 drop tcp any any -> $HOME_NET any (msg:"NMAP XMAS Tree scan"; flags:FPU; flow:to_server,not_established; window:1024; classtype:attempted-recon; sid:7000002; rev:002;)
