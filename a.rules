@@ -40,4 +40,5 @@ alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"Metasploit User Agent String"
 alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/5.0 (compatible\; MSIE 10.0\; Windows NT 6.1\; Trident/6.0)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:8000009; rev:1;)
 
 
-alert tcp $HOME_NET any -> $EXTERNAL_NET 4444 (msg:"Likely meterpreter attempt"; sid:9000001; rev:001;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET 4444 (msg:"Likely meterpreter attempt"; sid:9000001; rev:001;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET 8888 (msg:"Traffic outbound to port 8888"; sid:9000002; rev:001;)

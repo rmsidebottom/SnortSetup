@@ -1,3 +1,23 @@
+# ICMP (1)
+drop icmp !$HOME_NET any <> $HOME_NET any (msg:"ICMP Ping with remote address"; sid:1000001; rev:002;)
+
+# DNS (2), should only be udp
+drop tcp any any <> $HOME_NET 53 (msg:"TCP Traffic to/from host on port 53."; sid:2000001; rev:002;)
+
+# HTTP (3), should only be tcp
+drop udp any any <> $HOME_NET 80 (msg:"UDP traffic to/from host on port 80."; sid:3000001; rev:002;)
+
+# S/FTP (4), should only be tcp
+drop udp any any <> $HOME_NET 21 (msg:"UDP traffic to/from host on port 21"; sid:4000001; rev:002;)
+
+# MAIL (5)should only be tcp
+drop udp any any <> $HOME_NET 25 (msg:"UDP traffic to/from host on port 25"; sid:5000001; rev:001;)
+drop udp any any <> $HOME_NET 143 (msg:"UDP traffic to/from host on port 143"; sid:5000003; rev:001;)
+drop udp any any <> $HOME_NET 110 (msg:"UDP traffic to/from host on port 110"; sid:5000005; rev:001;)
+
+# SSH/SFTP (6), should only be tcp
+drop udp any any <> $HOME_NET 22 (msg:"UDP traffic to/from host on port 22"; sid:6000001; rev:002;)
+
 # nmap scans
 # NMAP operating system scan
 drop ip $EXTERNAL_NET any -> $HOME_NET any (msg:"ET SCAN NMAP -sO"; dsize:0; ip_proto:21; threshold: type both, track by_dst, count 1, seconds 60; reference:url,doc.emergingthreats.net/2000536; classtype:attempted-recon; sid:2000001; rev:002; metadata:created_at 2010_07_30, updated_at 2010_07_30;)
@@ -18,12 +38,16 @@ alert tcp $EXTERNAL_NET any -> $HOME_NET $HTTP_PORTS (msg:"ET SCAN Nessus User A
 
 # metasploits
 # reverse TCP from meterpreter shell, if egress traffic needs to leave via HTTP, switch any to var for http ports
-alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"Metasploit Meterpreter"; flow:to_server,established; content:"RECV"; http_client_body; depth:4; fast_pattern; isdataat:!0,relative; urilen:23<>24,norm; content:"POST"; pcre:"/^\/[a-z0-9]{4,5}_[a-z0-9]{16}\/$/Ui"; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/05/11/detecting-network-traffic-from-metasploits-meterpreter-reverse-http-module/; sid:8000001; rev:1;)
-#alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 6.0\; Windows NT 5.1)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618000; rev:1;)
-alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 6.1\; Windows NT)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618001; rev:1;)
-#alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 7.0\; Windows NT 6.0)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618002; rev:1;)
-alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 7.0\; Windows NT 6.0\; Trident/4.0\; SIMBAR={7DB0F6DE-8DE7-4841-9084-28FA914B0F2E}\; SLCC1\; .N|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618003; rev:1;)
-alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; Metasploit RSPEC)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618004; rev:1;)
-#alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/5.0 (Windows\; U\; Windows NT 5.1\; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/4.0.221.6 Safari/525.13|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618005; rev:1;)
-alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/5.0 (compatible\; Googlebot/2.1\; +http://www.google.com/bot.html)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618006; rev:1;)
-#alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/5.0 (compatible\; MSIE 10.0\; Windows NT 6.1\; Trident/6.0)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618007; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"Metasploit Meterpreter"; flow:to_server,established; content:"RECV"; http_client_body; depth:4; fast_pattern; isdataat:!0,relative; urilen:23<>24,norm; content:"POST"; pcre:"/^\/[a-z0-9]{4,5}_[a-z0-9]{16}\/$/Ui"; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/05/11/detecting-network-traffic-from-metasploits-meterpreter-reverse-http-module/; sid:8000001; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 6.0\; Windows NT 5.1)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618000; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 6.1\; Windows NT)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618001; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 7.0\; Windows NT 6.0)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618002; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; MSIE 7.0\; Windows NT 6.0\; Trident/4.0\; SIMBAR={7DB0F6DE-8DE7-4841-9084-28FA914B0F2E}\; SLCC1\; .N|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618003; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/4.0 (compatible\; Metasploit RSPEC)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618004; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/5.0 (Windows\; U\; Windows NT 5.1\; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/4.0.221.6 Safari/525.13|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618005; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/5.0 (compatible\; Googlebot/2.1\; +http://www.google.com/bot.html)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618006; rev:1;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"Metasploit User Agent String"; flow:to_server,established; content:"User-Agent|3a| Mozilla/5.0 (compatible\; MSIE 10.0\; Windows NT 6.1\; Trident/6.0)|0d 0a|"; http_header; classtype:trojan-activity; reference:url,blog.didierstevens.com/2015/03/16/quickpost-metasploit-user-agent-strings/; sid:1618007; rev:1;)
+
+
+drop tcp $HOME_NET any -> $EXTERNAL_NET 4444 (msg:"Likely meterpreter attempt"; sid:9000001; rev:002;)
+drop tcp $HOME_NET any -> $EXTERNAL_NET 8888 (msg:"Traffic outbound to port 8888"; sid:9000002; rev:001;)
